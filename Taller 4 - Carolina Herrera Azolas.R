@@ -12,11 +12,10 @@ summary(datos)
 ## Cantidad de datos 
 length(datos$personal)
 
-## histograma de la situación laboral
+## histograma de historial de cuenta corriente
 hist(x=datos$status)
 
-
-## histograma de la situación laboral
+## histograma de historial de créditos
 hist(x=datos$history)
 
 ## histograma de la situación laboral
