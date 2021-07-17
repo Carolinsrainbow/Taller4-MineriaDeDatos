@@ -1,16 +1,35 @@
+####Taller 4 
+ 
+## Incorporación de los datos a la biblioteca 
+datos <- read.csv("/Users/user/Desktop/SouthGermanCredit.csv",sep=";", header=TRUE)
+
+#Visualización general 
+head(datos)
+
+## Resumen estadístico
+summary(datos)
+
+## Cantidad de datos 
+length(datos$personal)
+
+## histograma de la situación laboral
+hist(x=datos$status)
+
+
+## histograma de la situación laboral
+hist(x=datos$history)
+
+## histograma de la situación laboral
+hist(x=datos$employed)
+
 # Instalamos los paquetes necesarios, en caso que no los tengamos instaladas
 install.packages("class")
 
 # Cargamos las librerias que utilizaremos
 library(class)
 
-# Indicamos el directorio de trabajo
-setwd("C:/Users/Sebastian/Documents/R")
-
-
-# Cargamos la base de datos
-datos <- read.csv("SouthGermanCredit.csv", sep = ";",header=TRUE)
-head(datos)
+## Resumen estadístico
+summary(datos)
 
 
 # En este ejemplo solo utilizaremos cuatro variables explicativas, por simplicidad
