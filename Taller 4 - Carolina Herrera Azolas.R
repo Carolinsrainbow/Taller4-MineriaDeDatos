@@ -27,32 +27,25 @@ install.packages("class")
 # Cargamos las librerias que utilizaremos
 library(class)
 
+## Elegimos las variables para el análisis y las que son categóricas se normalizan
 
-
-# En este ejemplo solo utilizaremos cuatro variables explicativas, por simplicidad
-# La cantidad de variables a utilizar es algo que usted debe analizar en su evaluacion
-
-# Elegiremos como variables exogenas:
-# age: variable continua, la podemos usar tal cual esta en la base de datos
-# housing: variable categorica con 3 niveles, debe ser transformada
-# job: variable ordinal numerica, la podemos usar tal cual esta en la base de datos
-# foreign: variable binaria, la podemos usar tal cual esta en la base de datos
-
-# Ademas usaremos obviamente la variable endogena a clasificar:
-# credit: variable binaria, la podemos usar tal cual esta en la base de datos
-
-datos_small <- as.data.frame(cbind(age = datos$age,
-                                   housing_free = (datos$housing == 1),
-                                   housing_rent = (datos$housing == 2),
-                                   job = datos$job,
-                                   foreign = datos$foreign,
-                                   credit = datos$credit))
+datos_adaptados <- as.data.frame(cbind(age = datos$age,
+                                       historial_delay = (datos$history == 0),
+                                       historial_critic = (datos$history == 1),
+                                       historial_new =(datos$history ==2),
+                                       historial_clean = (datos$history == 3),
+                                       savings = datos$savings,
+                                       employed = datos$employed,
+                                       job = datos$job,
+                                       foreign = datos$foreign,
+                                       credit = datos$credit))
 
 
 # Normalizamos los datos
 normalize <- function(x) { return ((x - min(x)) / (max(x) - min(x))) }
 
-datos_norm <- as.data.frame(lapply(datos_small, normalize))
+## datos_norm <- as.data.frame(lapply(datos_small, normalize))
+datos_norm1 <- as.data.frame(lapply(datos_adaptados, normalize))
 
 
 # Dividimos los datos en entrenamiento (75%) y validacion (25%)
@@ -60,13 +53,14 @@ set.seed(123)
 subset <- sample(1:nrow(datos), size = 0.75*nrow(datos), replace = FALSE)
 
 # Creamos las bases de datos a utilizar
-datos_train <- datos_norm[subset,1:5]
-label_train <- datos_norm[subset,6]
-datos_test <- datos_norm[-subset,1:5]
-label_test <- datos_norm[-subset,6]
+datos_train <- datos_norm1[subset,1:9]
+label_train <- datos_norm1[subset,10]
+datos_test <- datos_norm1[-subset,1:9]
+label_test <- datos_norm1[-subset,10]
 
 
-# Modelo KNN con dos K distintos
+# Modelo KNN con tres K distintos
+
 modelo_k3 <- knn(datos_train,
                  datos_test,
                  label_train,
@@ -82,8 +76,6 @@ modelo_k7 <- knn(datos_train,
                  datos_test,
                  label_train,
                  k = 7)
-
-
 
 # Matriz de confusion
 table(label_test, modelo_k3)
@@ -121,13 +113,13 @@ for (i in 1:25){
 plot(k.optm)
 
 
-# Corramos otra vez el modelo con K = 4
-modelo_k_4 <- knn(datos_train,
+# Corramos otra vez el modelo con K = 15
+modelo_k_15 <- knn(datos_train,
                   datos_test,
                   label_train,
-                  k = 4)
+                  k = 15)
 
-sum(label_test == modelo_k_4)/length(label_test)
+sum(label_test == modelo_k_15)/length(label_test)
 
 
 # Comparacion con un arbol de clasificacion
@@ -137,7 +129,7 @@ library(rpart.plot)
 datos_tree <- cbind(datos_train,
                     credit = label_train)
 
-modelo_tree <- rpart(credit ~ age + housing_free + housing_rent + job + foreign,
+modelo_tree <- rpart(credit ~ age + historial_delay + historial_critic + historial_new + historial_clean + savings + employed +job +foreign,
                      data = datos_tree,
                      method = "class",
                      parms = list(split = "information"))
